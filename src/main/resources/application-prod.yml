@@ -1,0 +1,29 @@
+#数据源配置
+envconfig:
+  jdbcUrl: jdbc:oracle:thin:@//ebs-db-scan.jasolar.com:1521/PLNPDB.jasolar.com
+  DBUserName: midlibrary
+  DBPassword: Plan#123456
+  DBDriverName: oracle.jdbc.driver.OracleDriver
+
+#ESB调用OA接口地址
+OA_URL: http://esbprd.jasolar.com:8011/ESB_OASB/OAActualNumberSyncRestProxy
+OA_USERNAME: hsp_budget01
+OA_PASSWORD: 8fdb5e907ed848a589a94f8f003dc37f
+
+#ESB调用HLY接口地址
+HLY_BUDGET_URL: http://esbprd.jasolar.com:8011/ESB_HeliosSB/HeliosJournalInfoSyncRestProxy
+#ESB调用HLY接口地址
+HLY_ACTUAL_URL: http://esbprd.jasolar.com:8011/ESB_HeliosSB/HeliosBudgetQueryRestProxy
+HLY_USERNAME: hsp_budget01
+HLY_PASSWORD: 8fdb5e907ed848a589a94f8f003dc37f
+
+#多维库 cube
+APP_CUBE: Plan1
+APP_NAME: HPJA
+ESS_USERNAME: essadmin
+ESS_PASS: yuanian@2022
+ESS_PROVIDER: http://172.28.9.30:19000/aps/JAPI
+ESS_OLAPSERVER: 172.28.9.32:1423
+
+#年度特殊处理 cube
+PROCESS_YEAR: false

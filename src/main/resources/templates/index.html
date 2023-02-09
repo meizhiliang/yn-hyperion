@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<!--suppress ALL -->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>晶澳预算运维管理</title>
+    <script language="javascript" src="static/js/jquery-3.0.0.js"></script>
+    <script src="../static/js/jquery-3.0.0.js"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+
+<div id="m-toast-pop" class="m-toast-pop">
+    <div class="m-toast-inner"><div class="m-toast-inner-text" id="m-toast-inner-text">tips</div></div>
+</div>
+<div id="tabs" class="basic-info">
+    <div class="header-top">
+        <div id="tab1" class="tab-item item-active" onclick="changetab(1,4);"><b>接口执行管理</b></div>
+        <div id="tab2" class="tab-item" onclick="changetab(2,4);"><b>预算调整数中间表</b></div>
+        <div id="tab3" class="tab-item" onclick="changetab(3,4);"><b>已维护组织映射</b></div>
+        <div id="tab4" class="tab-item" onclick="changetab(4,4);"><b>接口日志表</b></div>
+    </div>
+    <div class="tab-content">
+        <div id="content1" class="content-item content-active">
+            <table border="1" width="80%">
+                <thead>
+                <tr>
+                    <td><b>序号</b></td>
+                    <td><b>接口编码</b></td>
+                    <td><b>接口简述</b></td>
+                    <td width="480px"><b>接口描述</b></td>
+                    <td><b>调用方</b></td>
+                    <td><b>服务方</b></td>
+                    <td><b>调用频率</b></td>
+                    <td><b>人工操作</b></td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>OATOHYP-001</td>
+                    <td>同步实际数</td>
+                    <td align="left">预算系统经ESB系统调用OA实际数查询接口获取实际数更新到预算系统</td>
+                    <td>预算系统</td>
+                    <td>OA系统</td>
+                    <td>每天5点、10点、14点、19点各执行一次</td>
+                    <td><button type="button" onclick="getDataFromOA()">手动执行</button></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>OATOHYP-002</td>
+                    <td>同步调整预算中间表</td>
+                    <td align="left">OA系统经ESB系统调用预算系统接口将调整预算数更新到预算系统</td>
+                    <td>OA系统</td>
+                    <td>预算系统</td>
+                    <td>OA系统触发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>HYPTOOA-001</td>
+                    <td>同步预算可用余额</td>
+                    <td align="left">OA系统经ESB系统调用预算系统接口将可用余额通过查询计算返回给OA系统</td>
+                    <td>OA系统</td>
+                    <td>预算系统</td>
+                    <td>OA系统触发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>HYPTOOA-002</td>
+                    <td>同步可调数额</td>
+                    <td align="left">OA系统经ESB系统调用预算系统接口，获取可调额和合同投资额度</td>
+                    <td>OA系统</td>
+                    <td>预算系统</td>
+                    <td>OA系统触发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>HYPTOOA-003</td>
+                    <td>同步项目投资可用额</td>
+                    <td align="left">OA系统经ESB系统调用预算系统接口，获取项目可投资余额数</td>
+                    <td>OA系统</td>
+                    <td>预算系统</td>
+                    <td>OA系统触发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>HYPTOHLY-001</td>
+                    <td>同步编制预算</td>
+                    <td align="left">汇联易系统经ESB系统调用预算系统接口，获取编制预算信息更新预算信息</td>
+                    <td>汇联易系统</td>
+                    <td>预算系统</td>
+                    <td>汇联易系统触发</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>HYPTOHLY-002</td>
+                    <td>同步调整预算</td>
+                    <td align="left">预算系统经ESB系统调用汇联接口推送调整预算给汇联易更新调整预算</td>
+                    <td>预算系统</td>
+                    <td>汇联易系统</td>
+                    <td>每十分钟执行一次</td>
+                    <td><button type="button" onclick="pushAdjustData()">手动执行</button></td>
+                </tr>
+
+                <tr>
+                    <td>8</td>
+                    <td>HYPTOHLY-002</td>
+                    <td>同步实际数</td>
+                    <td align="left">预算系统经ESB系统调用汇联易实际数查询接口获取实际数更新到预算系统</td>
+                    <td>预算系统</td>
+                    <td>汇联易系统</td>
+                    <td>每天6点、11点、15点、20点各执行一次</td>
+                    <td><button type="button" onclick="getDataFromHly()">手动执行</button></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="content2" class="content-item" style="width:100%; height:800px; overflow:scroll;">
+            <div class='Share' id="app">
+                <div class='Share-1'>
+                    <label>
+                        <span class='text'><b>批次号：</b></span>
+                        <input type="text" class="input" name='batchNo' id ="batchNo"/>
+                    </label>
+                    <label>
+                        <span class='text'><b>科目：</b></span>
+                        <input type="text" id ="accountCode" class="input" name='accountCode'/>
+                    </label>
+                    <label id='wuliao-type'>
+                        <span class='text'><b>费用类型：</b></span>
+                        <select class='select' name='adjustType' id ="adjustType">
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="" class='text'>全部</option>
+                            <option value="F" class='text'>费用类支出</option>
+                            <option value="C" class='text'>资本性支出</option>
+                        </select>
+                    </label>
+                    <label id='wuliao-type'>
+                        <span class='text'><b>同步状态：</b></span>
+                        <select  class='select' name='syncStatus' id ="syncStatus">
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="" class='text'>全部</option>
+                            <option value="A" class='text'>待同步</option>
+                            <option value="B" class='text'>预算系统同步成功</option>
+                            <option value="C" class='text'>预算系统同步失败</option>
+                            <option value="D" class='text'>汇联易同步失败</option>
+                            <option value="E" class='text'>同步完成</option>
+                        </select>
+                    </label>
+                    <label id='wuliao-type'>
+                        <span class='text'><b>时间范围：</b></span>
+                        <select  class='select' name='dataCount' id ="dataCount">
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="30" class='text'>最近一个月</option>
+                            <option value="90" class='text'>最近三个月</option>
+                            <option value="365" class='text'>最近一年</option>
+                        </select>
+                    </label>
+                    <button class='button chax' name="select-botton" onclick="QueryAdjustList()">
+                        <span>查询</span>
+                    </button>
+                    <button class='button' name="reset-botton" onclick="ClearTextBox()">
+                        <span>重置</span>
+                    </button>
+                </div>
+            </div>
+            <table id = "table2Content" border="1" rules="all" style="width:100%; height:60px; text-align:center">
+            </table>
+        </div>
+        <div id="content3" class="content-item" style="width:99%; height:800px; overflow:scroll;">
+            <div class='Share2' id="app">
+                <div class='Share-1'>
+                    <label>
+                        <span class='text'><b>公司编码：</b></span>
+                        <input type="text" id ="ebsCode" class="input" name='ebsCode'/>
+                    </label>
+                    <label>
+                        <span class='text'><b>部门编码：</b></span>
+                        <input type="text" id ="ebsDept" class="input" name='ebsDept'/>
+                    </label>
+
+                    <button class='button chax' name="select-botton" onclick="QueryEntityList()">
+                        <span>查询</span>
+                    </button>
+                    <button class='button' name="reset-botton" onclick="ClearTextBox()">
+                        <span>重置</span>
+                    </button>
+                </div>
+            </div>
+
+            <table border="1" width="55%" id = "table3Content">
+            </table>
+        </div>
+
+        <div id="content4" class="content-item" style="width:100%; height:800px; overflow:scroll;" >
+            <div class='Share1' id="app">
+                <div class='Share-1'>
+                    <label>
+                        <span class='text'><b>接口描述：</b></span>
+                        <input type="text" id ="interTitle" class="input" name='interTitle'/>
+                    </label>
+                    <label>
+                        <span class='text'><b>调用方：</b></span>
+                        <select  class='select' name='requester' id ="requester">
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="" class='text'>全部</option>
+                            <option value="OA系统" class='text'>OA系统</option>
+                            <option value="汇联易系统" class='text'>汇联易系统</option>
+                            <option value="预算系统" class='text'>预算系统</option>
+                            <option value="钉钉系统" class='text'>钉钉系统</option>
+                        </select>
+                    </label>
+                    <label>
+                        <span class='text'><b>服务方：</b></span>
+                        <select  class='select' name='respondent' id ="respondent">
+                            <option value="" class='text'>全部</option>
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="OA系统" class='text'>OA系统</option>
+                            <option value="汇联易系统" class='text'>汇联易系统</option>
+                            <option value="预算系统" class='text'>预算系统</option>
+                            <option value="钉钉系统" class='text'>钉钉系统</option>
+                        </select>
+                    </label>
+                    <label id='wuliao-type'>
+                        <span class='text'><b>时间范围：</b></span>
+                        <select  class='select' name='logDataCount' id ="logDataCount">
+                            <!-- option 获取分组下的列表内容 -->
+                            <option value="1" class='text'>最近一天</option>
+                            <option value="7" class='text'>最近一周</option>
+                            <option value="30" class='text'>最近一个月</option>
+                            <option value="90" class='text'>最近三个月</option>
+                            <option value="365" class='text'>最近一年</option>
+                        </select>
+                    </label>
+                    <button class='button chax' name="select-botton" onclick="QueryLogList()">
+                        <span>查询</span>
+                    </button>
+                    <button class='button' name="reset-botton" onclick="ClearTextBox()">
+                        <span>重置</span>
+                    </button>
+                </div>
+            </div>
+            <!-- 模态框 -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                            <h4 class="modal-title" id="myModalLabel">
+                                日志报文
+                            </h4>
+                        </div>
+                        <div class="modal-body"><b>请求报文：</b>
+                            <textarea class="form-control" rows="8" id="requestParameter"></textarea>
+                        </div>
+                        <div class="modal-body"><b>响应报文：</b>
+                            <textarea class="form-control" rows="8" id="responseParameter"></textarea>
+                        </div>
+
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+
+            <table border="1" width="85%" id = "table4Content">
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+<script>
+    //创建遮罩层函数体
+    function createMask(){
+        var node=document.createElement('div');
+        node.setAttribute('id','backdrop');
+        node.style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:1000;background-color:rgba(0,0,0,0.6);";
+        node.style.display="none";
+        var html='<div style="position: fixed; top: 38%; left: 38%; z-index: 1001;">';
+        html+='<div style="text-align:center;">';
+        html+='<div style="padding-left:10px;font-size:14px;color:#FFF;">网络请求中...</div>';
+        html+='</div>';
+        html+='</div>';
+        node.innerHTML=html;
+        var body=document.querySelector('body');
+        body.appendChild(node);
+    }
+
+    //开启遮罩层函数体
+    function showMask(){
+        var backdrop=document.getElementById('backdrop');
+        backdrop.style.display='block';
+    }
+
+    //关闭遮罩层函数体
+    function closeMask(){
+        var backdrop=document.getElementById('backdrop');
+        backdrop.style.display='none';
+    }
+    //页面初始化，开启遮罩
+    createMask();
+    showMask();
+    //页面初始化完成，关闭遮罩
+    document.onreadystatechange = function(){
+        if(document.readyState == "complete"){
+            closeMask();
+        }
+    }
+
+    function changetab(id, count) {
+        for (let  i = 1; i <= count; i++) {
+            if (i == id) {
+                //这里使用修改class名字而不是直接改style 因为改style会存在样式覆盖的问题
+                document.getElementById('tab' + i).className = 'tab-item item-active';
+                document.getElementById('content' + i).className = 'content-item content-active';
+            } else {
+                document.getElementById('tab' + i).className = 'tab-item';
+                document.getElementById('content' + i).className = 'content-item';
+            }
+        }
+        if (id == 3) {
+            ClearTextBox();
+            QueryEntityList();
+        }
+        if (id == 2) {
+            ClearTextBox();
+            QueryAdjustList();
+        }
+        if (id == 4) {
+            ClearTextBox();
+            QueryLogList();
+        }
+    }
+
+    function getDataFromOA() {
+        $.ajax({
+            type: "GET",
+            url: '/oaData/syncActualData',
+            dataType: "json",
+            beforeSend: function () {
+                showMask();
+            },
+            success: function(res) {
+                $('#m-toast-inner-text').text(res.RETURNMSG);
+                $('#m-toast-pop').fadeIn();
+                setTimeout(function() {
+                    $('#m-toast-pop').fadeOut();
+                }, 4000);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function getDataFromHly() {
+        $.ajax({
+            type: "GET",
+            url: '/hlyData/syncActualData',
+            dataType: "json",
+            beforeSend: function () {
+                showMask();
+            },
+            success: function(res) {
+                $('#m-toast-inner-text').text(res.RETURNMSG);
+                $('#m-toast-pop').fadeIn();
+                setTimeout(function() {
+                    $('#m-toast-pop').fadeOut();
+                }, 6000);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function pushAdjustData() {
+        $.ajax({
+            type: "GET",
+            url: '/hlyData/syncAdjustBudget',
+            dataType: "json",
+            beforeSend: function () {
+                showMask();
+            },
+            success: function(res) {
+                $('#m-toast-inner-text').text(res.RETURNMSG);
+                $('#m-toast-pop').fadeIn();
+                setTimeout(function() {
+                    $('#m-toast-pop').fadeOut();
+                }, 3000);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function QueryEntityList() {
+        $.ajax({
+            type: "POST",
+            url: "/getEntities",
+            dataType: "json",
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify({
+                ebsCode: $("#ebsCode").val().trim(),
+                ebsDept: $("#ebsDept").val().trim(),
+            }),
+            beforeSend: function () {
+                showMask();
+            },
+            success: function (data) {
+                var tableHtml = "";
+                if(null != data && data.length > 0){
+                    tableHtml += "<thead><tr><th><b>序号</b></th><th><b>ESB组织</b></th><th><b>ESB部门</b></th><th><b>预算系统组织</b></th></tr></thead>";
+                    // 遍历生成主菜单
+                    tableHtml += "<tbody>";
+                    for (var j = 0; j < data.length; j++) {
+                        tableHtml+= "<tr><td>"+j+"</td><td>"+data[j].ebsCode+"</td><td>"+data[j].ebsDept+"</td><td>"+data[j].entityCode+"</td></tr>"
+                    };
+                    tableHtml += "</tbody>";
+                }else {
+                    tableHtml += "<thead><tr><td><b>序号</b></td><td><b>ESB组织</b></td><td><b>ESB部门</b></td><td><b>预算系统组织</b></td></tr></thead>";
+                    tableHtml += "<tbody><tr><td  colspan=\"4\">暂无数据</td></tr></tbody>";
+                }
+
+                $("#table3Content").html(tableHtml);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function QueryLogList() {
+        $.ajax({
+            type: "POST",
+            url: "/getLogs",
+            dataType : "json",
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify({
+                respondent: $("#respondent").val(),
+                requester: $("#requester").val(),
+                interTitle:$("#interTitle").val(),
+                dataCount:$("#logDataCount").val(),
+            }),
+            beforeSend: function () {
+                showMask();
+            },
+            success: function (data) {
+                var tableHtml = "";
+                tableHtml += "<thead><tr><th><b>序号</b></th><th><b>ESB标识</b></th><th><b>接口描述</b></th>" +
+                    "<th><b>接口方法</b></th><th><b>调用方</b></th><th><b>服务方</b></th><th><b>调用结果</b></th>" +
+                    "<th><b>请求时间</b></th><th><b>响应时间</b></th><th><b>操作</b></th></tr></thead>";
+                // 遍历生成主菜单
+                if(null != data && data.length > 0){
+                    tableHtml += "<tbody>";
+                    for (var k = 0; k < data.length; k++) {
+                        let requestParameter = data[k].requestParameter;
+                        let responseParameter = data[k].responseParameter;
+                        tableHtml += "<tr><td>"+k+"</td><td>"+data[k].instId+"</td><td>"+data[k].interTitle+"</td>" +
+                            "<td>"+data[k].interMethod+"</td><td>"+data[k].requester+"</td><td>"+data[k].respondent+"</td>";
+                        if(data[k].result=='S'){
+                            tableHtml += "<td>成功</td>";
+                        }else {
+                            tableHtml += "<td>失败</td>";
+                        }
+                        tableHtml +=  "<td>"+transformTimestamp(data[k].requestTime)+"</td><td>"+transformTimestamp(data[k].responseTime)+"</td><td>" ;
+                        tableHtml += `<button type="button" onclick='viewParameter(${requestParameter},${responseParameter})'>查看报文</button></td></tr>`;
+                    };
+                    tableHtml += "</tbody>";
+                }else {
+                    tableHtml += "<tbody><tr><td  colspan=\"10\">暂无数据</td></tr></tbody>";
+                }
+                $("#table4Content").html(tableHtml);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function QueryAdjustList() {
+        $.ajax({
+            type: "POST",
+            url: "/getAdjustBudgets",
+            dataType : "json",
+            contentType: 'application/json',
+            cache: false,
+            data: JSON.stringify({
+                batchNo: $("#batchNo").val(),
+                accountCode:$("#accountCode").val(),
+                adjustType:$("#adjustType").val(),
+                syncStatus:$("#syncStatus").val(),
+                dataCount:$("#dataCount").val(),
+            }),
+            beforeSend: function () {
+                showMask();
+            },
+            success: function (data) {
+                var tableHtml = "";
+                tableHtml += "<thead><tr><th width='50px'><b>序号</b></th><th><b>批次号</b></th><th><b>科目</b></th>" +
+                    "<th width='50px'><b>组织</b></th><th><b>部门</b></th><th width='60px'><b>年度</b></th><th width='50px'><b>期间</b></th>" +
+                    "<th width='100px'><b>支出类型</b></th><th><b>项目</b></th><th><b>币种</b></th><th width='100px'><b>一季度调整额</b></th>" +
+                    "<th width='100px'><b>二季度调整额</b></th><th width='100px'><b>三季度调整额</b></th><th width='100px'><b>四季度调整额</b></th>" +
+                    "<th width='120px'><b>资本支出调整额</b></th><th width='100px'><b>投资调整额</b></th><th width='130px'><b>状态</b></th>" +
+                    "<th width='380px'><b>描述</b></th><th width='80px'><b>推送时间</b></th><th width='80px'><b>更新时间</b></th><th width='90px'><b>人工操作</b></th></tr></thead>";
+                // 遍历生成主菜单
+                if(null != data && data.length > 0){
+                    tableHtml += "<tbody>";
+                    for (var k = 0; k < data.length; k++) {
+                        tableHtml += "<tr><td>"+k+"</td><td>"+data[k].batchNo+"</td><td>"+data[k].accountCode+"</td>" +
+                            "<td>"+data[k].entityCode+"</td><td>"+data[k].deptCode+"</td><td>"+data[k].yearCode+"</td>" +
+                            "<td>"+data[k].periodCode+"</td><td>"+data[k].adjustType+"</td><td>"+data[k].projectCode+"</td>" +
+                            "<td>"+data[k].currenyCode+"</td><td>"+data[k].q1Amount+"</td><td>"+data[k].q2Amount+"</td>" +
+                            "<td>"+data[k].q3Amount+"</td><td>"+data[k].q4Amount+"</td><td>"+data[k].adjustAmount+"</td>" +
+                            "<td>"+data[k].investAdjustAmount+"</td><td>"+data[k].syncStatus+"</td><td>"+data[k].syncMsg+"</td>" +
+                            "<td>"+transformTimestamp(data[k].createTime)+"</td><td>"+transformTimestamp(data[k].updateTime)+"</td><td>" ;
+                        if(data[k].syncStatus=='待同步' || data[k].syncStatus=='汇联易同步失败' || data[k].syncStatus=='预算系统同步失败'){
+                            tableHtml += "<button type='button' onclick=pushDataToHly('"+data[k].id+"')>手动执行</button></td></tr>";
+                        }else {
+                            tableHtml += "-</td></tr>";
+                        }
+                    };
+                    tableHtml += "</tbody>";
+                }else {
+                    tableHtml += "<tbody><tr><td  colspan=\"25\">暂无数据</td></tr></tbody>";
+                }
+                $("#table2Content").html(tableHtml);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+
+    function transformTimestamp(timestamp){
+        let a = new Date(timestamp).getTime();
+        const date = new Date(a);
+        const Y = date.getFullYear() + '-';
+        const M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+        const D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '  ';
+        const h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+        const m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+        const s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()); // 秒
+        const dateString = Y + M + D + h + m + s;
+        return dateString;
+    }
+
+    function pushDataToHly(id) {
+        $.ajax({
+            type: "GET",
+            url: '/syncAdjustBudgetById?id='+id,
+            dataType: "json",
+            beforeSend: function () {
+                showMask();
+            },
+            success: function(res) {
+                $('#m-toast-inner-text').text(res.RETURNMSG);
+                $('#m-toast-pop').fadeIn();
+                QueryAdjustList()
+                setTimeout(function() {
+                    $('#m-toast-pop').fadeOut();
+                }, 3000);
+            },
+            complete:function () {
+                closeMask();
+            }
+        });
+    }
+    //触发模态框的同时调用此方法
+    function viewParameter(requestParameter,responseParameter) {
+        //向模态框中传值
+        $('#requestParameter').val(JSON.stringify(requestParameter));
+        $('#responseParameter').val(JSON.stringify(responseParameter));
+        $('#myModal').modal('show');
+    }
+
+    function ClearTextBox(){
+        $("#batchNo").val("");
+        $("#accountCode").val("");
+        $("#adjustType").val("");
+        $("#syncStatus").val("");
+        $("#dataCount").val("30");
+
+        $("#respondent").val("");
+        $("#requester").val("");
+        $("#interTitle").val("");
+        $("#logDataCount").val("1");
+
+        $("#ebsCode").val("");
+        $("#ebsDept").val("");
+    }
+</script>
+
+
+<style>
+    .Share {
+        border: 2px black solid;
+        border-radius: 5px;
+        position: relative;
+        top: 0px;
+        padding: 10px 10px 10px 10px;
+        text-align: left;
+        margin-left: 10px;
+        width: 100%;
+
+        position: sticky;
+        top: -1px;
+        background-color: #f5f5f5;
+    }
+    .Share1 {
+        border: 2px black solid;
+        border-radius: 5px;
+        position: relative;
+        top: 0px;
+        padding: 10px 10px 10px 10px;
+        text-align: left;
+        margin-left: 10px;
+        width: 85%;
+
+        position: sticky;
+        top: -1px;
+        background-color: #f5f5f5;
+    }
+    .Share2 {
+        border: 2px black solid;
+        border-radius: 5px;
+        position: relative;
+        top: 0px;
+        padding: 10px 10px 10px 10px;
+        text-align: left;
+        margin-left: 10px;
+        width: 55%;
+
+        position: sticky;
+        top: -1px;
+        background-color: #f5f5f5;
+    }
+    .button {
+        margin-left: 10px;
+        border-radius: 3px;
+        font-size: var(--text-size, 16px);
+    }
+    .text {
+        padding-left: 10px;
+        font-size: var(--text-size, 16px);
+    }
+    .select {
+        /* padding-left: 5px; */
+        border: 1px solid rgb(109, 107, 107);
+        height: 28px;
+        width: 160px;
+        padding: 1px 2px;
+        border-radius: 3px;
+        outline: none;
+        position: relative;
+        bottom: 0px;
+        font-size: var(--text-size, 16px);
+    }
+    .chax {
+        margin-left: 85px;
+    }
+    .input {
+        border: 1px solid rgb(109, 107, 107);
+        border-radius: 3px;
+        outline: none;
+        height: 22px;
+    }
+    :root {
+        --Share-width: 1826px;
+        --Share-height: 20px;
+        --input-width: 165px;
+        --input-height: 18px;
+        --select-height: 22px;
+        --text-size: 16px;
+        --button-width: 48px;
+        --button-height: 28px;
+    }
+    /* 设置缩放效果 */
+    @media (max-width: 1800px) {
+        :root {
+            --Share-width: 1650px;
+            --Share-height: 20px;
+            --input-width: 160px;
+            --input-height: 15px;
+            --select-height: 20px;
+            /*--text-size: 12px;*/
+            --button-width: 40px;
+            --button-height: 23px;
+        }
+    }
+    .m-toast-pop {display: none; position: fixed; width: 100%;top: 0;bottom: 0;right: 0;overflow: auto;text-align: center;}
+    .m-toast-inner {position: absolute;left:50%;top:50%;width: 100%; transform:translate(-50%,-50%);-webkit-transform:translate(-50%,-50%);text-align: center;}
+    .m-toast-inner-text{display: inline-block;margin: 0 22px; padding: 19px 21px;font-size: 16px;color: #FFFFFF;letter-spacing: 0;line-height: 22px;background: rgba(0,0,0,0.72);border-radius: 10px;}
+
+    .basic-info {
+        margin: 0 auto;
+    }
+
+    .header-top {
+        border: 1px solid #e4e7ed;
+        border-left: none;
+        /* border-bottom: none; */
+        border-radius: 4px 4px 0 0;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        margin: 10px;
+    }
+
+    .tab-item {
+        padding: 0 20px;
+        height: 40px;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        line-height: 40px;
+        display: inline-block;
+        list-style: none;
+        font-size: 14px;
+        font-weight: 500;
+        color: #303133;
+        position: relative;
+        border-left: 1px solid #e4e7ed;
+    }
+
+    .tab-item:hover {
+        color: #409eff;
+        cursor: pointer;
+    }
+    table {
+        border: 2px black solid;
+        border-collapse: collapse;
+        vertical-align: middle;
+        text-align: center;
+        margin: 10px;
+    }
+    .item-active {
+        color: #409eff;
+    }
+
+    .content-item {
+        display: none;
+    }
+
+    .content-active {
+        display: block;
+    }
+
+    thead {
+        height: 35px;
+    }
+
+    thead tr th{
+        border: 2px black solid;
+        box-sizing: border-box;
+        position: sticky;
+        top: 55px;
+        background-color: #f5f5f5;
+        text-align: center;
+    }
+    tbody tr {
+        font-size: 14px;
+        height: 30px;
+    }
+    /* 如果表格中没有使用tbody而是直接使用tr，那么浏览器会自动创建一个tbody，并且将tr全都放到tbody中
+       所以说，tr不是table的子元素 */
+    tbody tr:nth-child(odd) {
+        background-color: rgb(230, 230, 230);
+    }
+    td {
+        border: 2px black solid;
+    }
+
+</style>

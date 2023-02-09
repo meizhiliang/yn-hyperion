@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yuanian.middleconsole.hyperion.dao.SyncAdjustBudgetDAO">
+  <resultMap id="BaseResultMap" type="yuanian.middleconsole.hyperion.model.vo.AdjustBudgetVO">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="BATCH_NO" jdbcType="VARCHAR" property="batchNo" />
+    <result column="ACCOUNT_CODE" jdbcType="VARCHAR" property="accountCode" />
+    <result column="ENTITY_CODE" jdbcType="VARCHAR" property="entityCode" />
+    <result column="DEPT_CODE" jdbcType="VARCHAR" property="deptCode" />
+    <result column="YEAR_CODE" jdbcType="VARCHAR" property="yearCode" />
+    <result column="PERIOD_CODE" jdbcType="VARCHAR" property="periodCode" />
+    <result column="Q1_AMOUNT" jdbcType="DECIMAL" property="q1Amount" />
+    <result column="Q2_AMOUNT" jdbcType="DECIMAL" property="q2Amount" />
+    <result column="Q3_AMOUNT" jdbcType="DECIMAL" property="q3Amount" />
+    <result column="Q4_AMOUNT" jdbcType="DECIMAL" property="q4Amount" />
+    <result column="ADJUST_AMOUNT" jdbcType="DECIMAL" property="adjustAmount" />
+    <result column="INVEST_ADJUST_AMOUNT" jdbcType="DECIMAL" property="investAdjustAmount" />
+    <result column="SYNC_STATUS" jdbcType="VARCHAR" property="syncStatus" />
+    <result column="SYNC_MSG" jdbcType="VARCHAR" property="syncMsg" />
+    <result column="CREATE_TIME" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="UPDATE_TIME" jdbcType="TIMESTAMP" property="updateTime" />
+
+    <result column="ADJUST_TYPE" jdbcType="VARCHAR" property="adjustType" />
+    <result column="CURRENY_CODE" jdbcType="VARCHAR" property="currenyCode" />
+    <result column="PROJECT_CODE" jdbcType="VARCHAR" property="projectCode" />
+    <result column="PUSH_COUNT" jdbcType="INTEGER" property="pushCount" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    ID, BATCH_NO, ACCOUNT_CODE, ENTITY_CODE, DEPT_CODE, YEAR_CODE, PERIOD_CODE, Q1_AMOUNT, 
+    Q2_AMOUNT, Q3_AMOUNT, Q4_AMOUNT, ADJUST_AMOUNT, INVEST_ADJUST_AMOUNT, SYNC_STATUS, 
+    SYNC_MSG,CREATE_TIME,UPDATE_TIME,ADJUST_TYPE,CURRENY_CODE,PROJECT_CODE,PUSH_COUNT
+  </sql>
+
+  <select id="selectList" resultMap="BaseResultMap" parameterType="yuanian.middleconsole.hyperion.model.vo.AdjustBudgetVO" >
+    SELECT <include refid="Base_Column_List" />
+    FROM SYNC_ADJUST_BUDGET
+    <where>
+      1=1
+      <if test="id != null and id != ''">
+        AND ID = #{id,jdbcType=VARCHAR}
+      </if>
+      <if test="batchNo != null  and batchNo != ''">
+        AND BATCH_NO = #{batchNo,jdbcType=VARCHAR}
+      </if>
+      <if test="syncStatus != null and syncStatus != ''">
+        AND SYNC_STATUS = #{syncStatus,jdbcType=VARCHAR}
+      </if>
+      <if test="adjustType != null and adjustType != ''">
+        AND ADJUST_TYPE = #{adjustType,jdbcType=VARCHAR}
+      </if>
+      <if test="notEqualsStatus != null and notEqualsStatus != ''">
+        AND SYNC_STATUS != #{notEqualsStatus,jdbcType=VARCHAR}
+        AND PUSH_COUNT &lt;= 10
+      </if>
+      <if test="dataCount != null and dataCount != ''">
+        AND TRUNC(CREATE_TIME) >= TRUNC(SYSDATE-#{dataCount,jdbcType=INTEGER})
+      </if>
+    </where>
+    ORDER BY CREATE_TIME DESC
+
+  </select>
+
+  <insert id="insertSelective" keyColumn="ID" keyProperty="id" parameterType="yuanian.middleconsole.hyperion.model.vo.AdjustBudgetVO" useGeneratedKeys="true">
+    insert into SYNC_ADJUST_BUDGET
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="batchNo != null">
+        BATCH_NO,
+      </if>
+      <if test="accountCode != null">
+        ACCOUNT_CODE,
+      </if>
+      <if test="entityCode != null">
+        ENTITY_CODE,
+      </if>
+      <if test="deptCode != null">
+        DEPT_CODE,
+      </if>
+      <if test="yearCode != null">
+        YEAR_CODE,
+      </if>
+      <if test="periodCode != null">
+        PERIOD_CODE,
+      </if>
+      <if test="q1Amount != null">
+        Q1_AMOUNT,
+      </if>
+      <if test="q2Amount != null">
+        Q2_AMOUNT,
+      </if>
+      <if test="q3Amount != null">
+        Q3_AMOUNT,
+      </if>
+      <if test="q4Amount != null">
+        Q4_AMOUNT,
+      </if>
+      <if test="adjustAmount != null">
+        ADJUST_AMOUNT,
+      </if>
+      <if test="investAdjustAmount != null">
+        INVEST_ADJUST_AMOUNT,
+      </if>
+      <if test="syncStatus != null">
+        SYNC_STATUS,
+      </if>
+      <if test="syncMsg != null">
+        SYNC_MSG,
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME,
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME,
+      </if>
+      <if test="adjustType != null">
+        ADJUST_TYPE,
+      </if>
+      <if test="currenyCode != null">
+        CURRENY_CODE,
+      </if>
+      <if test="projectCode != null">
+        PROJECT_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNo != null">
+        #{batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="accountCode != null">
+        #{accountCode,jdbcType=VARCHAR},
+      </if>
+      <if test="entityCode != null">
+        #{entityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="deptCode != null">
+        #{deptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="yearCode != null">
+        #{yearCode,jdbcType=VARCHAR},
+      </if>
+      <if test="periodCode != null">
+        #{periodCode,jdbcType=VARCHAR},
+      </if>
+      <if test="q1Amount != null">
+        #{q1Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q2Amount != null">
+        #{q2Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q3Amount != null">
+        #{q3Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q4Amount != null">
+        #{q4Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="adjustAmount != null">
+        #{adjustAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="investAdjustAmount != null">
+        #{investAdjustAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="syncStatus != null">
+        #{syncStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="syncMsg != null">
+        #{syncMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="adjustType != null">
+        #{adjustType,jdbcType=VARCHAR},
+      </if>
+      <if test="currenyCode != null">
+        #{currenyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectCode != null">
+        #{projectCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="yuanian.middleconsole.hyperion.model.vo.AdjustBudgetVO">
+    update SYNC_ADJUST_BUDGET
+    <set>
+      <if test="batchNo != null">
+        BATCH_NO = #{batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="accountCode != null">
+        ACCOUNT_CODE = #{accountCode,jdbcType=VARCHAR},
+      </if>
+      <if test="entityCode != null">
+        ENTITY_CODE = #{entityCode,jdbcType=VARCHAR},
+      </if>
+      <if test="deptCode != null">
+        DEPT_CODE = #{deptCode,jdbcType=VARCHAR},
+      </if>
+      <if test="yearCode != null">
+        YEAR_CODE = #{yearCode,jdbcType=VARCHAR},
+      </if>
+      <if test="periodCode != null">
+        PERIOD_CODE = #{periodCode,jdbcType=VARCHAR},
+      </if>
+      <if test="q1Amount != null">
+        Q1_AMOUNT = #{q1Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q2Amount != null">
+        Q2_AMOUNT = #{q2Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q3Amount != null">
+        Q3_AMOUNT = #{q3Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="q4Amount != null">
+        Q4_AMOUNT = #{q4Amount,jdbcType=DECIMAL},
+      </if>
+      <if test="adjustAmount != null">
+        ADJUST_AMOUNT = #{adjustAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="investAdjustAmount != null">
+        INVEST_ADJUST_AMOUNT = #{investAdjustAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="syncStatus != null">
+        SYNC_STATUS = #{syncStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="syncMsg != null">
+        SYNC_MSG = #{syncMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        CREATE_TIME = #{createTime,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        UPDATE_TIME = #{updateTime,jdbcType=VARCHAR},
+      </if>
+      <if test="adjustType != null">
+        ADJUST_TYPE = #{adjustType,jdbcType=VARCHAR},
+      </if>
+      <if test="currenyCode != null">
+        CURRENY_CODE = #{currenyCode,jdbcType=VARCHAR},
+      </if>
+      <if test="projectCode != null">
+        PROJECT_CODE = #{projectCode,jdbcType=VARCHAR},
+      </if>
+      <if test="pushCount != null">
+        PUSH_COUNT = #{pushCount,jdbcType=INTEGER},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

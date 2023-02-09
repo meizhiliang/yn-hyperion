@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yuanian.middleconsole.hyperion.dao.DimObjecctDAO">
+
+  <resultMap id="BaseResultMap" type="yuanian.middleconsole.hyperion.model.vo.EntityMapingVO" >
+    <result column="EBSCOMPANYCODE" property="ebsCode" jdbcType="VARCHAR" />
+    <result column="EBSDEPTCODE" property="ebsDept" jdbcType="VARCHAR" />
+    <result column="HYPENTITYCODE" property="entityCode" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <select id="getProjectsFromDb" resultType="map" >
+
+    SELECT T.OBJECT_ID,T.OBJECT_NAME,T.PARENT_ID,DT.OBJECT_NAME AS ATT_TYPE_NAME,AO.OBJECT_NAME ATT_NAME
+    FROM EPM_PLN_APP01.HSP_OBJECT T
+    INNER JOIN EPM_PLN_APP01.HSP_MEMBER_TO_ATTRIBUTE M ON T.OBJECT_ID=M.MEMBER_ID --关联属性维度表
+    INNER JOIN EPM_PLN_APP01.HSP_ATTRIBUTE_DIM D ON M.ATTR_ID = D.ATTR_ID  --属性类别
+    INNER JOIN EPM_PLN_APP01.HSP_OBJECT DT ON D.ATTR_ID =DT.OBJECT_ID AND DT.OBJECT_NAME='是否传汇联易' --属性类别名称
+    INNER JOIN EPM_PLN_APP01.HSP_ATTRIBUTE_MEMBER A ON M.ATTR_MEM_ID = A.ATTR_MEM_ID  --属性值
+    INNER JOIN EPM_PLN_APP01.HSP_OBJECT AO ON A.ATTR_MEM_ID = AO.OBJECT_ID --属性值名称
+
+  </select>
+
+
+  <select id="getEntityFromDb" resultType="string" >
+    SELECT HYPENTITYCODE
+    FROM V_MAP_EBSTOHYP_ENTITY
+    WHERE EBSCOMPANYCODE = #{orgCode,jdbcType=VARCHAR} AND EBSDEPTCODE = #{deptCode,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getEntityByCode" resultType="java.util.Map" >
+    SELECT EBSCOMPANYCODE , EBSDEPTCODE
+    FROM V_MAP_EBSTOHYP_ENTITY
+    WHERE HYPENTITYCODE = #{orgCode,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getEntityList" resultMap="BaseResultMap" parameterType="yuanian.middleconsole.hyperion.model.vo.EntityMapingVO">
+    SELECT EBSCOMPANYCODE , EBSDEPTCODE ,HYPENTITYCODE
+    FROM V_MAP_EBSTOHYP_ENTITY
+    <where>
+      1=1
+      <if test="ebsCode != null and ebsCode != ''">
+        AND EBSCOMPANYCODE = #{ebsCode,jdbcType=VARCHAR}
+      </if>
+      <if test="ebsDept != null and ebsDept != ''">
+        AND EBSDEPTCODE = #{ebsDept,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
+
+
+  <select id="getChildrenAccount" resultType="string">
+    SELECT OBJECT_NAME  FROM (
+
+      SELECT OBJECT_NAME, HAS_CHILDREN FROM  EPM_PLN_APP01.HSP_OBJECT T
+      START WITH T.OBJECT_NAME = '5101' CONNECT BY T.PARENT_ID = PRIOR T.OBJECT_ID
+
+      UNION
+
+	  SELECT OBJECT_NAME, HAS_CHILDREN FROM EPM_PLN_APP01.HSP_OBJECT T
+	  START WITH T.OBJECT_NAME = '6601' CONNECT BY T.PARENT_ID = PRIOR T.OBJECT_ID
+
+      UNION
+
+      SELECT OBJECT_NAME, HAS_CHILDREN FROM EPM_PLN_APP01.HSP_OBJECT T
+	  START WITH T.OBJECT_NAME = '6602' CONNECT BY T.PARENT_ID = PRIOR T.OBJECT_ID
+
+      UNION
+	  SELECT OBJECT_NAME, HAS_CHILDREN FROM EPM_PLN_APP01.HSP_OBJECT T
+	  START WITH T.OBJECT_NAME = '660221' CONNECT BY T.PARENT_ID = PRIOR T.OBJECT_ID
+
+    ) WHERE HAS_CHILDREN = 0
+  </select>
+
+  <select id="getChildrenProject" resultType="string">
+    SELECT OBJECT_NAME FROM (
+      SELECT OBJECT_NAME,HAS_CHILDREN FROM EPM_PLN_APP01.HSP_OBJECT T
+      START WITH T.OBJECT_NAME = 'XM01' CONNECT BY T.PARENT_ID = PRIOR T.OBJECT_ID
+    ) WHERE HAS_CHILDREN =0
+  </select>
+
+
+  <select id="getBooksAndOrgs" resultType="java.util.Map" >
+    SELECT  T.ORGANIZATIONCODE ,T.SCENARIOCODE ,T.VERSIONCODE , T.STRUCTURECODE
+    FROM V_MAP_HLY_LEDGER T
+  </select>
+</mapper>

@@ -1,0 +1,63 @@
+server:
+  #端口
+  port: 8080
+
+spring:
+  profiles:
+    #启用的环境配置  dev表示  使用 application-dev.yml
+    active: dev
+  datasource:
+    druid:
+      # 下面为连接池的补充设置，应用到上面所有数据源中
+      # 初始化大小，最小，最大
+      initial-size: 50
+      min-idle: 5
+      max-active: 200
+      # 配置获取连接等待超时的时间
+      max-wait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 25200000
+      # sql 校验
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 打开PSCache，并且指定每个连接上PSCache的大小
+      pool-prepared-statements: true
+      # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      max-pool-prepared-statement-per-connection-size: 20
+      filter:
+        wall:
+          config:
+            comment-allow: true
+            multi-statement-allow: true
+      filters: stat,log4j2
+      # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      remove-abandoned: true
+      remove-abandoned-timeout: 1800
+      log-abandoned: true
+      keep-alive: true
+    type: com.alibaba.druid.pool.DruidDataSource
+    url: ${envconfig.jdbcUrl}
+    driver-class-name: ${envconfig.DBDriverName}
+    username: ${envconfig.DBUserName}
+    password: ${envconfig.DBPassword}
+  transaction:
+      #是否开启事务回滚机制
+      rollback-on-commit-failure: true
+
+mybatis:
+  #mybaties扫描的dao路径，可配置多个
+  mapper-locations: classpath*:**/dao/**/*DAO.xml,classpath*:yuanian/**/dao/**/*${envconfig.DBDialect}.xml
+  #type-aliases-package: com.epoch.**.model
+  configuration:
+    #是否开启二级缓存
+    cache-enabled: false
+    #返回null值
+    call-setters-on-nulls: true
+    # 在insert与update时，值为空处理为null
+    jdbc-type-for-null: 'null'
+

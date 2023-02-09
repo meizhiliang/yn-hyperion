@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="yuanian.middleconsole.hyperion.dao.InterfaceLogDAO">
+  <resultMap id="BaseResultMap" type="yuanian.middleconsole.hyperion.model.vo.InterfaceLogVO">
+    <id column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="INST_ID" jdbcType="VARCHAR" property="instId" />
+    <result column="INTER_TITLE" jdbcType="VARCHAR" property="interTitle" />
+    <result column="INTER_METHOD" jdbcType="VARCHAR" property="interMethod" />
+    <result column="REQUESTER" jdbcType="VARCHAR" property="requester" />
+    <result column="RESPONDENT" jdbcType="VARCHAR" property="respondent" />
+    <result column="REQUEST_TIME" jdbcType="TIMESTAMP" property="requestTime" />
+    <result column="RESPONSE_TIME" jdbcType="TIMESTAMP" property="responseTime" />
+    <result column="REQUEST_PARAMETER" jdbcType="CLOB" property="requestParameter" />
+    <result column="RESPONSE_PARAMETER" jdbcType="CLOB" property="responseParameter" />
+    <result column="RESULT" jdbcType="VARCHAR" property="result" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    ID, INST_ID, INTER_TITLE, INTER_METHOD, REQUESTER, RESPONDENT, REQUEST_TIME, RESPONSE_TIME, 
+    "RESULT",REQUEST_PARAMETER,RESPONSE_PARAMETER
+  </sql>
+
+
+  <select id="queryList" resultMap="BaseResultMap" parameterType="yuanian.middleconsole.hyperion.model.vo.InterfaceLogVO" >
+    SELECT <include refid="Base_Column_List" />
+    FROM INTERFACE_LOG
+    <where>
+      1=1
+      <if test="requester != null and requester != ''">
+        AND REQUESTER = #{requester,jdbcType=VARCHAR}
+      </if>
+      <if test="respondent != null and respondent != ''">
+        AND RESPONDENT = #{requester,jdbcType=VARCHAR}
+      </if>
+      <if test="interTitle != null  and interTitle != ''">
+        AND INTER_TITLE LIKE #{interTitle}
+      </if>
+      <if test="dataCount != null and dataCount != ''">
+        AND TRUNC(REQUEST_TIME) >= TRUNC(SYSDATE-#{dataCount,jdbcType=INTEGER})
+      </if>
+    </where>
+    ORDER BY REQUEST_TIME DESC
+  </select>
+
+  <insert id="insertSelective" parameterType="yuanian.middleconsole.hyperion.model.vo.InterfaceLogVO" >
+    insert into INTERFACE_LOG
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="instId != null">
+        INST_ID,
+      </if>
+      <if test="interTitle != null">
+        INTER_TITLE,
+      </if>
+      <if test="interMethod != null">
+        INTER_METHOD,
+      </if>
+      <if test="requester != null">
+        REQUESTER,
+      </if>
+      <if test="respondent != null">
+        RESPONDENT,
+      </if>
+      <if test="requestTime != null">
+        REQUEST_TIME,
+      </if>
+      <if test="responseTime != null">
+        RESPONSE_TIME,
+      </if>
+      <if test="result != null">
+        "RESULT",
+      </if>
+      <if test="requestParameter != null">
+        REQUEST_PARAMETER,
+      </if>
+      <if test="responseParameter != null">
+        RESPONSE_PARAMETER,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="instId != null">
+        #{instId,jdbcType=VARCHAR},
+      </if>
+      <if test="interTitle != null">
+        #{interTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="interMethod != null">
+        #{interMethod,jdbcType=VARCHAR},
+      </if>
+      <if test="requester != null">
+        #{requester,jdbcType=VARCHAR},
+      </if>
+      <if test="respondent != null">
+        #{respondent,jdbcType=VARCHAR},
+      </if>
+      <if test="requestTime != null">
+        #{requestTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="responseTime != null">
+        #{responseTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="result != null">
+        #{result,jdbcType=VARCHAR},
+      </if>
+      <if test="requestParameter != null">
+        #{requestParameter,jdbcType=CLOB},
+      </if>
+      <if test="responseParameter != null">
+        #{responseParameter,jdbcType=CLOB},
+      </if>
+    </trim>
+  </insert>
+
+</mapper>

@@ -5,7 +5,7 @@ server:
 spring:
   profiles:
     #启用的环境配置  dev表示  使用 application-dev.yml
-    active: dev
+    active: prod
   datasource:
     druid:
       # 下面为连接池的补充设置，应用到上面所有数据源中

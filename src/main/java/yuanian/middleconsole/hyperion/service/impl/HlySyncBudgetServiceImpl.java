@@ -228,6 +228,7 @@ public class HlySyncBudgetServiceImpl implements HlySyncBudgetService {
             }else{
                 try {
                     this.updateHyperionAdjust(budgetVO,returnVO,cube);
+                    handleShell(SHELL_PATH);
                 }catch (Exception e){
                     returnVO.setSyncStatus(CommonEnum.C.getFlag());
                     returnVO.setSyncMsg("预算系统更新OA调整预算数失败："+ e.getMessage());
@@ -237,7 +238,6 @@ public class HlySyncBudgetServiceImpl implements HlySyncBudgetService {
                     }
                 }
             }
-            handleShell(SHELL_PATH);
             //4 预算系统更新成功后推送到汇联易
             if(returnVO.getSyncStatus().equals(CommonEnum.B.getFlag())){
                 returnVO.setPushCount(budgetVO.getPushCount()+1);
